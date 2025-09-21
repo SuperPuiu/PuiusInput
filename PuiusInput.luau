@@ -3,7 +3,7 @@ local module = {};
 local ConnectedEvents = {};
 local DefaultConfiguration = {
 	PassProcessedEvents = true,
-	AcceptedInput = 4 -- 1 for InputBegan, 2 for InputEnded, 3 for InputChanged and 4 for all
+	InputType = 4 -- 1 for InputBegan, 2 for InputEnded, 3 for InputChanged and 4 for all
 };
 
 local UIS = game:GetService("UserInputService");
@@ -55,9 +55,13 @@ local function PropagateInputInternal(InputObject: InputObject, GameProcessed: b
 
 	for Keybind, Data in pairs(ConnectedEvents) do
 		for _, Event in pairs(Data) do
-      if ((Event.Configuration.InputType ~= InputType and Event.Configuration.InputType ~= 4) or (not Event.Configuration.PassProcessedEvents and GameProcessed) or (InputObject.KeyCode ~= Keybind and InputObject.UserInputType ~= Keybind)) then
-				continue;
+      if (Event.Configuration.InputType ~= InputType and Event.Configuration.InputType ~= 4) then
+        continue;
 			end;
+
+      if (not Event.Configuration.PassProcessedEvents and GameProcessed) or (InputObject.KeyCode ~= Keybind and InputObject.UserInputType ~= Keybind) then
+        continue;
+      end;
 
 			Event.Callback(DataStructure);
 		end;
